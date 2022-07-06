@@ -24,22 +24,41 @@ async function run() {
     await client.connect();
     // Information collections
     const database = client.db("TheAksAural");
+    const userCollection = database.collection("userCollection");
     const contactCollection = database.collection("ContactUserCollection");
+    const adminPostMobileCollection = database.collection("AdminPostMobileCollection");
+
+
+
+
+
+
+
+
+
+
+// user save database
+app.post('/users',async(req,res)=>{
+    const user=req.body;
+    const result=await userCollection.insertOne(user);
+    res.json(result)
+})
+
 
     // CONTACT MAIL HANDLE
     app.post("/send", async (req, res) => {
       const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
-          user: "theskyauralhelp@gmail.com",
+          user: "dracula_king@sonicompany.in",
           pass: process.env.PASSWORD,
         },
       });
 
       const mailOpctions = {
-        from: "theskyauralhelp@gmail.com",
-        to: req.body.email,
-        subject: `Message From`,
+        from: req.body.email,
+        to: "dracula_king@sonicompany.in",
+        subject: `new message`,
         text: "<h2>Hello Everyone</h2>",
         html: `
                     <span>User Name: ${req.body.name}</span>
@@ -60,9 +79,53 @@ async function run() {
         }
       });
     });
+
+
+    // hadle (admin) mobile post
+app.post('/mobileDetailsPost',async(req,res)=>{
+  const result=await adminPostMobileCollection.insertOne(req.body)
+  console.log(req.body)
+  res.json(result)
+})
+
+    // GET  posted data
+    app.get('/mobileDetailsPost',async(req,res)=>{
+      const result=await adminPostMobileCollection.find({}).toArray();
+      res.send(result)
+  })
+
+
+
+
+
+
+
+
+
   } finally {
     // await client.close()
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 run().catch(console.dir);
 

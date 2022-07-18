@@ -7,6 +7,7 @@ app.use(cors());
 app.use(express.json());
 const nodemailer = require("nodemailer");
 
+
 // mongodb=====
 const ObjectId = require("mongodb").ObjectId;
 const { MongoClient, ServerApiVersion } = require("mongodb");
@@ -36,6 +37,16 @@ async function run() {
 
 
 
+    app.get('/users/:email',async (req,res)=>{
+      const email=req.params.email;
+      const query={email:email};
+      const user=await userCollection.findOne(query)
+      let isAdmin=false;
+      if(user?.role==='admin'){
+        isAdmin=true
+      }
+      res.json({admin:isAdmin})
+    })
 
 // user save database
 app.post('/users',async(req,res)=>{
@@ -43,6 +54,19 @@ app.post('/users',async(req,res)=>{
     const result=await userCollection.insertOne(user);
     res.json(result)
 })
+
+
+// make admin'
+app.put('/users/admin',async (req,res)=>{
+  const user=req.body;
+  const filter={email:user.email};
+  const updateDoc={$set:{role:'admin'}}
+  const result= await userCollection.updateOne(filter,updateDoc)
+  res.json(result)
+
+
+})
+
 
 
     // CONTACT MAIL HANDLE
@@ -56,7 +80,7 @@ app.post('/users',async(req,res)=>{
       });
 
       const mailOpctions = {
-        from: req.body.email,
+        from: `${req.body.email}`,
         to: "dracula_king@sonicompany.in",
         subject: `new message`,
         text: "<h2>Hello Everyone</h2>",
@@ -87,6 +111,7 @@ app.post('/mobileDetailsPost',async(req,res)=>{
   console.log(req.body)
   res.json(result)
 })
+
 
     // GET  posted data
     app.get('/mobileDetailsPost',async(req,res)=>{

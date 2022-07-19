@@ -120,9 +120,13 @@ app.post('/mobileDetailsPost',async(req,res)=>{
   })
 
 
+// delete mobile shop collection
 
-
-
+app.delete("/mobileDetailsPost/:id", async(req,res)=>{
+  const id=req.params.id;
+  console.log('deleting id:',id);
+  res.json(1)
+})
 
 
 
